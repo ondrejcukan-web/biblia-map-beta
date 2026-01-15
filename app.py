@@ -290,7 +290,7 @@ with colB:
             focus = it.get("focus", "—")
             source = it.get("source", "—")
 
-                    for it in filtered[:80]:
+        for it in filtered[:80]:
             dt_local = it["dt"].astimezone()
             img = it.get("image")
             title = (it.get("title") or "(bez názvu)").replace("\n", " ")
