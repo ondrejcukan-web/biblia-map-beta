@@ -200,7 +200,7 @@ def load_items(sources):
             title = (e.get("title") or "").strip()
             link = (e.get("link") or "").strip()
             summary = (e.get("summary") or e.get("description") or "").strip()
-                      img = pick_image_from_entry(e)
+            img = pick_image_from_entry(e)
 
             items.append({
                 "source": s["name"],
