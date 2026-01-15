@@ -9,6 +9,42 @@ st.image("logo.png", width=240)
 st.markdown("### Mapa biblických zdrojov na Slovensku – betaverzia")
 st.caption("Agregátor zdrojov o Svätom Písme (weby, médiá, nástroje) + adresár.")
 st.divider()
+st.markdown("""
+<style>
+/* Celková typografia a rozostupy */
+.block-container {
+  padding-top: 1.2rem;
+  padding-bottom: 2rem;
+  max-width: 1200px;
+}
+
+/* Karty */
+.card {
+  border: 1px solid rgba(49,51,63,0.15);
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+
+/* Menší text */
+.muted {
+  opacity: 0.75;
+  font-size: 0.92rem;
+}
+
+/* Štítky (badge) */
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(49,51,63,0.18);
+  margin-right: 6px;
+  font-size: 0.85rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
 
 
 # ---- Konfigurácia zdrojov (dopĺňaj ďalšie RSS/Atom feedy) ----
