@@ -238,30 +238,84 @@ with colB:
 
         d_q = st.text_input("Hľadať v adresári (názov / URL)", value="")
 
-        # Výpis adresára
+                # --- Výber triedenia a rozsahu ---
+        c_sort1, c_sort2 = st.columns([2, 1])
+        with c_sort1:
+            sort_mode = st.selectbox("Triediť podľa", ["Priority (TOP)", "Abecedne", "Denominácia → názov"])
+        with c_sort2:
+            top_n = st.number_input("Limit (0 = bez limitu)", min_value=0, max_value=500, value=0, step=10)
+
+        # --- Filtrovanie ---
         rows = []
         for x in DIRECTORY:
-            if x["denom"] not in d_denom_sel:
+            if x.get("denom") not in d_denom_sel:
                 continue
-            if x["focus"] not in d_focus_sel:
+            if x.get("focus") not in d_focus_sel:
                 continue
-            if x["type"] not in d_type_sel:
+            if x.get("type") not in d_type_sel:
                 continue
-            if x["format"] not in d_format_sel:
+            if x.get("format") not in d_format_sel:
                 continue
             if d_q.strip():
-                blob = f"{x['name']} {x['url']}".lower()
+                blob = f"{x.get('name','')} {x.get('url','')} {x.get('tags','')} {x.get('notes','')}".lower()
                 if d_q.lower().strip() not in blob:
                     continue
             rows.append(x)
 
+        # --- Triedenie ---
+        def prio(x):
+            v = x.get("priority")
+            try:
+                return int(v)
+            except Exception:
+                return 9999
+
+        if sort_mode == "Priority (TOP)":
+            rows.sort(key=lambda x: (prio(x), x.get("name","").lower()))
+        elif sort_mode == "Abecedne":
+            rows.sort(key=lambda x: x.get("name","").lower())
+        else:
+            rows.sort(key=lambda x: (x.get("denom",""), x.get("name","").lower()))
+
+        if top_n and top_n > 0:
+            rows = rows[:top_n]
+
         st.write(f"Položiek v adresári: **{len(rows)}**")
         st.divider()
 
-        # Pekné karty
+        # --- Tabuľka (rýchly prehľad) ---
+        table_rows = []
         for x in rows:
-            st.markdown(f"### [{x['name']}]({x['url']})")
-            st.write(f"**{x['denom']}** | {x['focus']} | {x['type']} | {x['format']}")
-            st.caption(x["url"])
+            table_rows.append({
+                "Názov": x.get("name","—"),
+                "Denominácia": x.get("denom","—"),
+                "Zameranie": x.get("focus","—"),
+                "Typ": x.get("type","—"),
+                "Formát": x.get("format","—"),
+                "Oficiálnosť": x.get("official","—"),
+                "Priority": x.get("priority","—"),
+                "URL": x.get("url","—"),
+            })
+        st.dataframe(table_rows, use_container_width=True, hide_index=True)
+
+        st.divider()
+
+        # --- Karty (detail) ---
+        for x in rows:
+            st.markdown(f"### [{x.get('name','(bez názvu)')}]({x.get('url','#')})")
+            line = f"**{x.get('denom','—')}** | {x.get('focus','—')} | {x.get('type','—')} | {x.get('format','—')}"
+            if x.get("official"):
+                line += f" | {x.get('official')}"
+            if x.get("priority") is not None:
+                line += f" | priority: {x.get('priority')}"
+            st.write(line)
+
+            if x.get("tags"):
+                st.caption(f"Značky: {x.get('tags')}")
+            if x.get("notes"):
+                st.write(x.get("notes"))
+
+            st.caption(x.get("url"))
             st.divider()
+
 
