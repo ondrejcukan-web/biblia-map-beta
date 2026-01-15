@@ -155,7 +155,7 @@ def parse_dt(entry) -> datetime | None:
             except Exception:
                 pass
     return None
-  def pick_image_from_entry(entry):
+def pick_image_from_entry(entry):
     # media_thumbnail (časté pri RSS)
     try:
         mt = entry.get("media_thumbnail")
