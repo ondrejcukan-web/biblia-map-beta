@@ -247,14 +247,32 @@ with colB:
 
         st.divider()
 
-        for it in filtered[:80]:
+                for it in filtered[:80]:
             dt_local = it["dt"].astimezone()
-            st.markdown(f"### [{it['title']}]({it['link']})")
-            st.write(f"{dt_local:%Y-%m-%d %H:%M} | **{it['denom']}** | {it['focus']} | {it['source']}")
-            if it["summary"]:
-                st.write(it["summary"][:350] + ("…" if len(it["summary"]) > 350 else ""))
-            st.caption(it["home"])
-            st.divider()
+            title = (it.get("title") or "(bez názvu)").replace("\n", " ")
+            link = it.get("link") or "#"
+            summary = (it.get("summary") or "").replace("\n", " ")
+            denom = it.get("denom", "—")
+            focus = it.get("focus", "—")
+            source = it.get("source", "—")
+
+            st.markdown(f"""
+<div class="card">
+  <div>
+    <span class="badge">{denom}</span>
+    <span class="badge">{focus}</span>
+    <span class="badge">{source}</span>
+  </div>
+  <h4 style="margin:10px 0 6px 0;">
+    <a href="{link}" target="_blank" style="text-decoration:none;">
+      {title}
+    </a>
+  </h4>
+  <div class="muted">{dt_local:%Y-%m-%d %H:%M}</div>
+  <div style="margin-top:8px;">{summary[:300]}{"…" if len(summary) > 300 else ""}</div>
+</div>
+""", unsafe_allow_html=True)
+
 
     # ---------------- ADRESÁR ----------------
     with tab_dir:
