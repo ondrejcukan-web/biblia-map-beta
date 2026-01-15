@@ -155,6 +155,37 @@ def parse_dt(entry) -> datetime | None:
             except Exception:
                 pass
     return None
+  def pick_image_from_entry(entry):
+    # media_thumbnail (časté pri RSS)
+    try:
+        mt = entry.get("media_thumbnail")
+        if mt and isinstance(mt, list) and mt[0].get("url"):
+            return mt[0]["url"]
+    except Exception:
+        pass
+
+    # media_content
+    try:
+        mc = entry.get("media_content")
+        if mc and isinstance(mc, list) and mc[0].get("url"):
+            return mc[0]["url"]
+    except Exception:
+        pass
+
+    # enclosures (image/jpeg a pod.)
+    try:
+        enc = entry.get("enclosures")
+        if enc and isinstance(enc, list):
+            for e in enc:
+                href = e.get("href")
+                etype = (e.get("type") or "").lower()
+                if href and ("image" in etype or href.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))):
+                    return href
+    except Exception:
+        pass
+
+    return None
+
 
 @st.cache_data(ttl=300)
 def load_items(sources):
@@ -169,6 +200,8 @@ def load_items(sources):
             title = (e.get("title") or "").strip()
             link = (e.get("link") or "").strip()
             summary = (e.get("summary") or e.get("description") or "").strip()
+                      img = pick_image_from_entry(e)
+
             items.append({
                 "source": s["name"],
                 "home": s["home"],
@@ -179,6 +212,7 @@ def load_items(sources):
                 "link": link,
                 "summary": summary,
                 "dt": dt,
+                "image": img,
             })
     items.sort(key=lambda x: x["dt"], reverse=True)
     return items
@@ -256,7 +290,27 @@ with colB:
             focus = it.get("focus", "—")
             source = it.get("source", "—")
 
-            st.markdown(f"""
+                    for it in filtered[:80]:
+            dt_local = it["dt"].astimezone()
+            img = it.get("image")
+            title = (it.get("title") or "(bez názvu)").replace("\n", " ")
+            link = it.get("link") or "#"
+            summary = (it.get("summary") or "").replace("\n", " ")
+            denom = it.get("denom", "—")
+            focus = it.get("focus", "—")
+            source = it.get("source", "—")
+
+            c_img, c_txt = st.columns([1, 3], gap="medium")
+
+            with c_img:
+                if img:
+                    try:
+                        st.image(img, use_container_width=True)
+                    except Exception:
+                        pass
+
+            with c_txt:
+                st.markdown(f"""
 <div class="card">
   <div>
     <span class="badge">{denom}</span>
@@ -272,6 +326,7 @@ with colB:
   <div style="margin-top:8px;">{summary[:300]}{"…" if len(summary) > 300 else ""}</div>
 </div>
 """, unsafe_allow_html=True)
+
 
 
     # ---------------- ADRESÁR ----------------
