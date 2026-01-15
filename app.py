@@ -5,6 +5,11 @@ from datetime import datetime, timedelta, timezone
 from dateutil import parser as dtparser
 
 st.set_page_config(page_title="Mapa biblických zdrojov (beta)", layout="wide")
+st.image("logo.png", width=240)
+st.markdown("### Mapa biblických zdrojov na Slovensku – betaverzia")
+st.caption("Agregátor zdrojov o Svätom Písme (weby, médiá, nástroje) + adresár.")
+st.divider()
+
 
 # ---- Konfigurácia zdrojov (dopĺňaj ďalšie RSS/Atom feedy) ----
 SOURCES = [
