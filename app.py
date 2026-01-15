@@ -185,6 +185,20 @@ def pick_image_from_entry(entry):
         pass
 
     return None
+      # Niekedy je obrázok priamo v HTML summary (napr. <img src="...">)
+    try:
+        html = entry.get("summary") or entry.get("description") or ""
+        if "<img" in html and "src=" in html:
+            # jednoduché vytiahnutie prvého src="
+            part = html.split("src=", 1)[1]
+            quote = part[0]
+            if quote in ['"', "'"]:
+                url = part[1:].split(quote, 1)[0]
+                if url.startswith("http"):
+                    return url
+    except Exception:
+        pass
+
 
 
 @st.cache_data(ttl=300)
