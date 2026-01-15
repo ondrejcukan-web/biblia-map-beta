@@ -3,6 +3,7 @@ import feedparser
 import requests
 from datetime import datetime, timedelta, timezone
 from dateutil import parser as dtparser
+import re
 
 st.set_page_config(page_title="Mapa biblických zdrojov (beta)", layout="wide")
 st.image("logo.png", width=240)
@@ -230,6 +231,27 @@ def load_items(sources):
             })
     items.sort(key=lambda x: x["dt"], reverse=True)
     return items
+  @st.cache_data(ttl=3600)
+def get_og_image(url: str) -> str | None:
+    raw = safe_get(url, timeout=10)
+    if not raw:
+        return None
+    try:
+        html = raw.decode("utf-8", errors="ignore")
+    except Exception:
+        return None
+
+    # og:image
+    m = re.search(r'property=["\']og:image["\'][^>]*content=["\']([^"\']+)["\']', html, re.IGNORECASE)
+    if m:
+        return m.group(1)
+
+    # twitter:image
+    m = re.search(r'name=["\']twitter:image["\'][^>]*content=["\']([^"\']+)["\']', html, re.IGNORECASE)
+    if m:
+        return m.group(1)
+
+    return None
 
 # ---- UI ----
 st.title("Mapa biblických zdrojov na Slovensku – betaverzia")
@@ -307,6 +329,8 @@ with colB:
         for it in filtered[:80]:
             dt_local = it["dt"].astimezone()
             img = it.get("image")
+          if not img and it.get("link"):
+    img = get_og_image(it["link"])
             title = (it.get("title") or "(bez názvu)").replace("\n", " ")
             link = it.get("link") or "#"
             summary = (it.get("summary") or "").replace("\n", " ")
