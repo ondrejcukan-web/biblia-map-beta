@@ -231,7 +231,7 @@ def load_items(sources):
             })
     items.sort(key=lambda x: x["dt"], reverse=True)
     return items
-  @st.cache_data(ttl=3600)
+@st.cache_data(ttl=3600)
 def get_og_image(url: str) -> str | None:
     raw = safe_get(url, timeout=10)
     if not raw:
