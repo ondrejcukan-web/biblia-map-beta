@@ -329,8 +329,8 @@ with colB:
         for it in filtered[:80]:
             dt_local = it["dt"].astimezone()
             img = it.get("image")
-        if not img and it.get("link"):
-    img = get_og_image(it["link"])
+            if not img and it.get("link"):
+                img = get_og_image(it["link"])
             title = (it.get("title") or "(bez názvu)").replace("\n", " ")
             link = it.get("link") or "#"
             summary = (it.get("summary") or "").replace("\n", " ")
