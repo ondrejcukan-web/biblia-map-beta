@@ -247,7 +247,7 @@ with colB:
 
         st.divider()
 
-                for it in filtered[:80]:
+        for it in filtered[:80]:
             dt_local = it["dt"].astimezone()
             title = (it.get("title") or "(bez názvu)").replace("\n", " ")
             link = it.get("link") or "#"
