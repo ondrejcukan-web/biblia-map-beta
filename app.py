@@ -44,6 +44,49 @@ SOURCES = [
         "format": "Text",
     },
 ]
+# ---- Adresár zdrojov (aj bez RSS) ----
+DIRECTORY = [
+    # Katolíci – liturgia a texty
+    {"name": "DoKostola.sk", "url": "https://www.dokostola.sk/", "denom": "Katolíci", "focus": "Liturgia / čítania", "type": "Web", "format": "Text"},
+    {"name": "breviar.sk", "url": "https://breviar.sk/", "denom": "Katolíci", "focus": "Liturgia / čítania", "type": "Web", "format": "Text"},
+    {"name": "Liturgický kalendár (KBS)", "url": "https://lc.kbs.sk/", "denom": "Katolíci", "focus": "Liturgia / čítania", "type": "Web", "format": "Text"},
+    {"name": "Liturgia hodín (KBS)", "url": "https://lh.kbs.sk/", "denom": "Katolíci", "focus": "Liturgia / čítania", "type": "Web", "format": "Text"},
+    {"name": "Sväté písmo online (svatepismo.sk)", "url": "https://svatepismo.sk/", "denom": "Katolíci", "focus": "Biblia online", "type": "Web", "format": "Text"},
+    {"name": "AudioSvätéPísmo.sk", "url": "https://www.audiosvatepismo.sk/", "denom": "Katolíci", "focus": "Audio Biblia", "type": "Web", "format": "Audio"},
+
+    # Katolíci – organizácie a médiá
+    {"name": "Katolícke biblické dielo (KBD)", "url": "https://kbd.sk/", "denom": "Katolíci", "focus": "Apoštolát / komentáre", "type": "Web", "format": "Text"},
+    {"name": "KBS.sk", "url": "https://www.kbs.sk/", "denom": "Katolíci", "focus": "Inštitucionálne", "type": "Web", "format": "Text"},
+    {"name": "TV LUX – web", "url": "https://www.tvlux.sk/", "denom": "Katolíci", "focus": "Médiá", "type": "Web", "format": "Video"},
+    {"name": "TV LUX – Biblia (podcast)", "url": "https://www.tvlux.sk/podcast/biblia", "denom": "Katolíci", "focus": "Audio/Video Biblia", "type": "Podcast", "format": "Audio"},
+    {"name": "TV LUX – Biblia (YouTube playlist)", "url": "https://www.youtube.com/playlist?list=PLIzsQMptV5HbUp25MYNbml7oi3oFwF5ax", "denom": "Katolíci", "focus": "Audio/Video Biblia", "type": "YouTube", "format": "Video"},
+
+    # Ekumenické – Biblia online
+    {"name": "Biblia.sk (SBS)", "url": "https://biblia.sk/", "denom": "Ekumenické", "focus": "Biblia online", "type": "Web", "format": "Text"},
+    {"name": "Slovenská biblická spoločnosť", "url": "https://www.bible.sk/", "denom": "Ekumenické", "focus": "Organizácia", "type": "Web", "format": "Text"},
+    {"name": "MojaBiblia.sk", "url": "https://www.mojabiblia.sk/", "denom": "Ekumenické", "focus": "Štúdium / nástroje", "type": "Web", "format": "Text"},
+
+    # Protestanti (ECAV a širšie)
+    {"name": "ECAV.sk – komunitné štúdium Biblie", "url": "https://www.ecav.sk/komnunitne-studium-biblie", "denom": "Protestanti", "focus": "Štúdium Biblie", "type": "Web", "format": "Text"},
+    {"name": "ZD ECAV – online štúdium Biblie", "url": "https://www.zdecav.sk/online-studium-biblie/", "denom": "Protestanti", "focus": "Štúdium Biblie", "type": "Web", "format": "Text"},
+    {"name": "lutheran.sk", "url": "https://www.lutheran.sk/", "denom": "Protestanti", "focus": "Inštitucionálne / kázne", "type": "Web", "format": "Text"},
+
+    # Pravoslávni
+    {"name": "Pravoslávna cirkev na Slovensku (orthodox.sk)", "url": "https://orthodox.sk/", "denom": "Pravoslávni", "focus": "Inštitucionálne", "type": "Web", "format": "Text"},
+    {"name": "pravoslavie.sk", "url": "https://pravoslavie.sk/", "denom": "Pravoslávni", "focus": "Články / duchovno", "type": "Web", "format": "Text"},
+
+    # Adventisti
+    {"name": "Sobotná škola (CASD) – štúdium Biblie", "url": "https://sobotnaskola.casd.sk/studium-biblie/", "denom": "Adventisti", "focus": "Štúdium Biblie", "type": "Web", "format": "Text"},
+
+    # Jehovovi svedkovia
+    {"name": "JW.org – Biblia (slovenčina)", "url": "https://www.jw.org/sk/kniznica/biblia/", "denom": "Jehovovi svedkovia", "focus": "Biblia online", "type": "Web", "format": "Text"},
+
+    # Komerčné (predaj Biblie a biblickej literatúry)
+    {"name": "Kumran.sk – Biblia (eshop)", "url": "https://www.kumran.sk/45-biblia", "denom": "Komerčné", "focus": "Predaj Biblie", "type": "Eshop", "format": "Text"},
+    {"name": "Zachej.sk – Biblia (eshop)", "url": "https://www.zachej.sk/kategoria/14/biblia/", "denom": "Komerčné", "focus": "Predaj Biblie", "type": "Eshop", "format": "Text"},
+    {"name": "SSV eobchod – Biblia/Sväté Písmo", "url": "https://eobchod.ssv.sk/eshop/biblia-svate-pismo/p-16.xhtml", "denom": "Komerčné", "focus": "Predaj Biblie", "type": "Eshop", "format": "Text"},
+]
+
 
 # ---- Helpery ----
 def safe_get(url: str, timeout=12) -> bytes | None:
@@ -123,53 +166,102 @@ with colA:
     st.caption("V ďalšej iterácii sa to zmení na ‘blindspoty’ podľa tém/perikop.")
 
 with colB:
-    items = load_items(SOURCES)
+    tab_feed, tab_dir = st.tabs(["Feed", "Adresár"])
 
-    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
-    filtered = []
-    for it in items:
-        if it["denom"] not in denom_sel:
-            continue
-        if it["focus"] not in focus_sel:
-            continue
-        if it["format"] not in format_sel:
-            continue
-        if it["dt"] < cutoff:
-            continue
-        if kw.strip():
-            blob = f"{it['title']} {it['summary']}".lower()
-            if kw.lower().strip() not in blob:
+    # ---------------- FEED ----------------
+    with tab_feed:
+        items = load_items(SOURCES)
+
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        filtered = []
+        for it in items:
+            if it["denom"] not in denom_sel:
                 continue
-        filtered.append(it)
+            if it["focus"] not in focus_sel:
+                continue
+            if it["format"] not in format_sel:
+                continue
+            if it["dt"] < cutoff:
+                continue
+            if kw.strip():
+                blob = f"{it['title']} {it['summary']}".lower()
+                if kw.lower().strip() not in blob:
+                    continue
+            filtered.append(it)
 
-    # Aktivita podľa zdroja
-    activity = {}
-    for it in filtered:
-        activity[it["source"]] = activity.get(it["source"], 0) + 1
+        # Aktivita podľa zdroja
+        activity = {}
+        for it in filtered:
+            activity[it["source"]] = activity.get(it["source"], 0) + 1
 
-    st.subheader("Feed")
-    st.write(f"Nájdené položky: **{len(filtered)}**")
+        st.subheader("Feed")
+        st.write(f"Nájdené položky: **{len(filtered)}**")
 
-    # Zobraz aktivitu
-    st.markdown("**Aktívne zdroje:**")
-    if activity:
-        for src, cnt in sorted(activity.items(), key=lambda x: x[1], reverse=True):
-            st.write(f"- {src}: {cnt}")
-    else:
-        st.info("Žiadne položky v zvolenom okne/filtri.")
+        st.markdown("**Aktívne zdroje:**")
+        if activity:
+            for src, cnt in sorted(activity.items(), key=lambda x: x[1], reverse=True):
+                st.write(f"- {src}: {cnt}")
+        else:
+            st.info("Žiadne položky v zvolenom okne/filtri.")
 
-    st.divider()
-
-    # Zobraz položky
-    for it in filtered[:80]:
-        dt_local = it["dt"].astimezone()  # lokálny čas prostredia
-        st.markdown(f"### [{it['title']}]({it['link']})")
-        st.write(f"{dt_local:%Y-%m-%d %H:%M} | **{it['denom']}** | {it['focus']} | {it['source']}")
-        if it["summary"]:
-            st.write(it["summary"][:350] + ("…" if len(it["summary"]) > 350 else ""))
-        st.caption(it["home"])
         st.divider()
 
-st.sidebar.header("Zdroje v betaverzii")
-for s in SOURCES:
-    st.sidebar.write(f"- {s['denom']} | {s['focus']} | {s['name']}")
+        for it in filtered[:80]:
+            dt_local = it["dt"].astimezone()
+            st.markdown(f"### [{it['title']}]({it['link']})")
+            st.write(f"{dt_local:%Y-%m-%d %H:%M} | **{it['denom']}** | {it['focus']} | {it['source']}")
+            if it["summary"]:
+                st.write(it["summary"][:350] + ("…" if len(it["summary"]) > 350 else ""))
+            st.caption(it["home"])
+            st.divider()
+
+    # ---------------- ADRESÁR ----------------
+    with tab_dir:
+        st.subheader("Adresár zdrojov")
+        st.caption("Zoznam dôležitých slovenských webov/kanálov o Svätom písme (aj bez RSS).")
+
+        # Filtre pre adresár
+        d_denoms = sorted(set(x["denom"] for x in DIRECTORY))
+        d_focus = sorted(set(x["focus"] for x in DIRECTORY))
+        d_types = sorted(set(x["type"] for x in DIRECTORY))
+        d_formats = sorted(set(x["format"] for x in DIRECTORY))
+
+        c1, c2, c3, c4 = st.columns(4)
+        with c1:
+            d_denom_sel = st.multiselect("Denominácia", d_denoms, default=d_denoms)
+        with c2:
+            d_focus_sel = st.multiselect("Zameranie", d_focus, default=d_focus)
+        with c3:
+            d_type_sel = st.multiselect("Typ", d_types, default=d_types)
+        with c4:
+            d_format_sel = st.multiselect("Formát", d_formats, default=d_formats)
+
+        d_q = st.text_input("Hľadať v adresári (názov / URL)", value="")
+
+        # Výpis adresára
+        rows = []
+        for x in DIRECTORY:
+            if x["denom"] not in d_denom_sel:
+                continue
+            if x["focus"] not in d_focus_sel:
+                continue
+            if x["type"] not in d_type_sel:
+                continue
+            if x["format"] not in d_format_sel:
+                continue
+            if d_q.strip():
+                blob = f"{x['name']} {x['url']}".lower()
+                if d_q.lower().strip() not in blob:
+                    continue
+            rows.append(x)
+
+        st.write(f"Položiek v adresári: **{len(rows)}**")
+        st.divider()
+
+        # Pekné karty
+        for x in rows:
+            st.markdown(f"### [{x['name']}]({x['url']})")
+            st.write(f"**{x['denom']}** | {x['focus']} | {x['type']} | {x['format']}")
+            st.caption(x["url"])
+            st.divider()
+
